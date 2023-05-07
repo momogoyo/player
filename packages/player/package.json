@@ -1,0 +1,32 @@
+{
+  "name": "@momogoyo/player",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "types": "./types/index.d.ts",
+  "main": "./dist/player.umd.cjs",
+  "module": "./dist/player.js",
+  "export": {
+    ".": {
+      "import": "./dist/player.js",
+      "require": "./dist/player.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "tsc && vite build --watch",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@momogoyo/shared": "workspace:*",
+    "preact": "^10.13.1"
+  },
+  "devDependencies": {
+    "@emotion/css": "^11.10.0",
+    "@preact/preset-vite": "^2.5.0",
+    "@types/node": "^20.1.0",
+    "@types/css": "^0.0.33",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2"
+  }
+}
