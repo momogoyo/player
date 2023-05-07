@@ -1,13 +1,17 @@
+import { assign } from '@momogoyo/shared'
+import { defaultConfigs } from '@/configs/default'
 import Core from '@/core'
 
-const element = document.createElement('div')
-element.className = 'player'
+import type { ConfigsType } from './configs/types'
 
-const core = new Core(element, {
-  src: '',
-  autoplay: false
-})
+function Player (
+  element: HTMLElement,
+  configs: ConfigsType
+) {
+  assign(defaultConfigs, configs)
+  const core = new Core(element, configs)
 
-export default core
+  return core
+}
 
-console.log('core: ', core)
+export default Player

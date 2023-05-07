@@ -1,12 +1,9 @@
-type ConfigType = {
-  src: string,
-  autoplay: boolean
-}
+import type { ConfigsType } from '@/configs/types'
 
 class Player {
   constructor(
     public element: HTMLElement,
-    public configs: ConfigType
+    public configs: ConfigsType
   ) {
     this.initialize()
   }
