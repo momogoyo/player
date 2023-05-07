@@ -11,17 +11,23 @@ importers:
       '@momogoyo/shared': workspace:*
       '@preact/preset-vite': ^2.5.0
       '@types/css': ^0.0.33
+      '@types/hls.js': ^1.0.0
       '@types/node': ^20.1.0
+      eventemitter3: ^5.0.1
+      hls.js: ^1.4.1
       preact: ^10.13.1
       typescript: ^5.0.2
       vite: ^4.3.2
     dependencies:
       '@momogoyo/shared': link:../shared
+      eventemitter3: 5.0.1
+      hls.js: 1.4.1
       preact: 10.13.2
     devDependencies:
       '@emotion/css': 11.11.0
       '@preact/preset-vite': 2.5.0_preact@10.13.2+vite@4.3.5
       '@types/css': 0.0.33
+      '@types/hls.js': 1.0.0
       '@types/node': 20.1.0
       typescript: 5.0.4
       vite: 4.3.5_@types+node@20.1.0
@@ -688,6 +694,13 @@ packages:
     resolution: {integrity: sha512-qjeDgh86R0LIeEM588q65yatc8Yyo/VvSIYFqq8JOIHDolhGNX0rz7k/OuxqDpnpqlefoHj8X4Ai/6hT9IWtKQ==}
     dev: true
 
+  /@types/hls.js/1.0.0:
+    resolution: {integrity: sha512-EGY2QJefX+Z9XH4PAxI7RFoNqBlQEk16UpYR3kbr82CIgMX5SlMe0PjFdFV0JytRhyVPQCiwSyONuI6S1KdSag==}
+    deprecated: This is a stub types definition. hls.js provides its own type definitions, so you do not need this installed.
+    dependencies:
+      hls.js: 1.4.1
+    dev: true
+
   /@types/node/20.1.0:
     resolution: {integrity: sha512-O+z53uwx64xY7D6roOi4+jApDGFg0qn6WHcxe5QeqjMaTezBO/mxdfFXIVAVVyNWKx84OmPB3L8kbVYOTeN34A==}
     dev: true
@@ -1061,6 +1074,10 @@ packages:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
     dev: true
 
+  /eventemitter3/5.0.1:
+    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+    dev: false
+
   /find-root/1.1.0:
     resolution: {integrity: sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng==}
     dev: true
@@ -1098,6 +1115,9 @@ packages:
     dependencies:
       function-bind: 1.1.1
     dev: true
+
+  /hls.js/1.4.1:
+    resolution: {integrity: sha512-7/RBLhnmWbEVj/UxkqBK3rcqr/a2QAbSdjdp74iRKaPLosJoPwLw9mcjl5EOv6jutd0yHL8yGH3pSuUjNzRMyA==}
 
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}

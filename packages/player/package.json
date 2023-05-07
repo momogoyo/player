@@ -5,10 +5,10 @@
   "type": "module",
   "types": "./types/index.d.ts",
   "main": "./dist/player.umd.cjs",
-  "module": "./dist/player.js",
+  "module": "./dist/player.es.js",
   "export": {
     ".": {
-      "import": "./dist/player.js",
+      "import": "./dist/player.es.js",
       "require": "./dist/player.umd.cjs"
     }
   },
@@ -19,13 +19,16 @@
   },
   "dependencies": {
     "@momogoyo/shared": "workspace:*",
+    "eventemitter3": "^5.0.1",
+    "hls.js": "^1.4.1",
     "preact": "^10.13.1"
   },
   "devDependencies": {
     "@emotion/css": "^11.10.0",
     "@preact/preset-vite": "^2.5.0",
-    "@types/node": "^20.1.0",
     "@types/css": "^0.0.33",
+    "@types/hls.js": "^1.0.0",
+    "@types/node": "^20.1.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.2"
   }

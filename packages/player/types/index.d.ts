@@ -1,3 +1,4 @@
 import Core from '@/core';
-declare const core: Core;
-export default core;
+import type { ConfigsType } from './configs/types';
+declare function Player(element: HTMLElement, configs: ConfigsType): Core;
+export default Player;
