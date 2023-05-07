@@ -6,7 +6,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, './src/index.ts'),
       name: 'player',
-      fileName: 'player',
+      fileName: (format) => `player.${format}.js`,
       formats: ['es', 'umd']
     },
     rollupOptions: {
@@ -15,7 +15,8 @@ export default defineConfig({
         globals: {
           preact: 'preact'
         }
-      }
+      },
+      external: ['preact']
     },
   },
   resolve: {
