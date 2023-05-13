@@ -1,6 +1,7 @@
 import { h } from 'preact'
 import { useRef, useEffect } from 'preact/hooks'
 import { css } from '@emotion/css'
+import Seek from '@/components/Seek'
 
 import type Core from '@/core'
 import type { ConfigsType } from '@/configs/types'
@@ -25,17 +26,9 @@ const Player = ({
       ref={playerRef}
       class={`Momogoyo__Player`}
     >
-      <button type="button" class={`${ecss.Button}`} onClick={() => core.play()}>재생</button>
-      <button type="button" class={`${ecss.Button}`} onClick={() => core.pause()}>정지</button>
+      <Seek core={core} />
     </div>
   )
-}
-
-const ecss = {
-  Button: css`
-    width: 100px;
-    height: 50px;
-  `
 }
 
 export default Player

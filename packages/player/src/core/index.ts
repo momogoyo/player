@@ -42,7 +42,6 @@ class Player extends EventEmitter {
     this.hls.on(Hls.Events.MANIFEST_PARSED, this.render.bind(this))
 
     // window.addEventListener('load', this.initialize.bind(this))
-    // this.mediaElement.addEventListener(Events.LOADEDMETADATA, this.render.bind(this))
   }
 
   public render (): void {
@@ -56,22 +55,31 @@ class Player extends EventEmitter {
     }
   }
 
+  // getter / setter
+  get paused () {
+    return this.mediaElement.paused
+  }
+
+  get currentTime () {
+    return this.mediaElement.currentTime
+  }
+
   // methods
-  play() {
+  play () {
     this.mediaElement.play()
     this.emit(Events.PLAY)
   }
   
-  pause() {
+  pause () {
     this.mediaElement.pause()
     this.emit(Events.PAUSE)
   }
 
-  setCurrentTime(time: number) {
+  setCurrentTime (time: number) {
     this.mediaElement.currentTime = time
   }
 
-  setPlaybackRate(rate: number) {
+  setPlaybackRate (rate: number) {
     this.mediaElement.playbackRate = rate
   }
 }

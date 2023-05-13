@@ -1,4 +1,9 @@
 import { h } from 'preact';
+import type Core from '@/core';
 import type { ConfigsType } from '@/configs/types';
-declare const Player: ({ ...configs }: ConfigsType) => h.JSX.Element;
+type PlayerProps = {
+    core: Core;
+    configs: ConfigsType;
+};
+declare const Player: ({ core, configs }: PlayerProps) => h.JSX.Element;
 export default Player;
