@@ -12,7 +12,7 @@ type ConfigsType = {
   author?: string
   controls?: boolean
   autoplay?: boolean
-  mute?: boolean
+  muted?: boolean
   loop?: boolean
   chapters?: ChapterType[]
 }

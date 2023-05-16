@@ -17,7 +17,7 @@ const defaultConfigs = {
   author: '',
   controls: true,
   autoplay: false,
-  mute: false,
+  muted: false,
   loop: false,
   chapters: [chapter]
 } as ConfigsType

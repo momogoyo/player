@@ -11,9 +11,10 @@ declare class Player extends EventEmitter {
     private addEventListeners;
     render(): void;
     private destroy;
+    get paused(): boolean;
+    get currentTime(): number;
     play(): void;
     pause(): void;
-    get paused(): boolean;
     setCurrentTime(time: number): void;
     setPlaybackRate(rate: number): void;
 }

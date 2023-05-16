@@ -56,12 +56,48 @@ class Player extends EventEmitter {
   }
 
   // getter / setter
-  get paused () {
+  get paused (): boolean {
     return this.mediaElement.paused
   }
 
-  get currentTime () {
+  get autoplay (): boolean {
+    return this.mediaElement.autoplay
+  }
+
+  get muted (): boolean {
+    return this.mediaElement.muted
+  }
+  
+  get loop (): boolean {
+    return this.mediaElement.loop
+  }
+  
+  get currentTime (): number {
     return this.mediaElement.currentTime
+  }
+
+  get playbackRate (): number {
+    return this.mediaElement.playbackRate
+  }
+
+  set autoplay (value: boolean) {
+    this.mediaElement.autoplay = value
+  }
+
+  set muted (value: boolean) {
+    this.mediaElement.muted = value
+  }
+
+  set loop (value: boolean) {
+    this.mediaElement.loop = value
+  }
+
+  set currentTime (value: number) {
+    this.mediaElement.currentTime = value
+  }
+
+  set playbackRate (value: number) {
+    this.mediaElement.playbackRate = value
   }
 
   // methods
@@ -73,14 +109,6 @@ class Player extends EventEmitter {
   pause () {
     this.mediaElement.pause()
     this.emit(Events.PAUSE)
-  }
-
-  setCurrentTime (time: number) {
-    this.mediaElement.currentTime = time
-  }
-
-  setPlaybackRate (rate: number) {
-    this.mediaElement.playbackRate = rate
   }
 }
 

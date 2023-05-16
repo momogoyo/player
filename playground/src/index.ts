@@ -12,7 +12,3 @@ const player = Player(element, configs)
 player.on('rendered', () => {
   console.log('rendered!!', player)
 })
-
-player.on('play', () => {
-    console.log('play')
-})
