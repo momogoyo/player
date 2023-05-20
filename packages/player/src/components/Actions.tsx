@@ -4,6 +4,8 @@ import { css } from '@emotion/css'
 import Icon from '@/components/Icon'
 
 import type Core from '@/core'
+import { Events } from '@/core/constants'
+import { debounce } from '@momogoyo/shared'
 
 type ActionsProps = {
   core: Core
@@ -16,6 +18,30 @@ const Actions = ({
   const [autoplay, setAutoplay] = useState(core.configs.autoplay)
   const [muted, setMuted] = useState(!core.configs.muted)
   const [loop, setLoop] = useState(core.configs.loop)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+
+  const format = (time: number) => {
+    const hours = Math.floor(time / 3600)
+    const minutes = Math.floor((time % 3600) / 60)
+    const seconds = Math.floor(time % 60)
+
+    const formattedHours = hours.toString().padStart(2, '0')
+    const formattedMinutes = minutes.toString().padStart(2, '0')
+    const formattedSeconds = seconds.toString().padStart(2, '0')
+
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`
+  }
+
+  useEffect(() => {
+    const videoElement = core.mediaElement
+
+    if (videoElement) {
+      setDuration(videoElement.duration)
+
+      console.log(Math.min(Math.max(core.currentTime, 0), duration))
+    }
+  }, [])
 
   useEffect(() => {
     if (autoplay) {
@@ -26,7 +52,17 @@ const Actions = ({
       setPlay(true)
       core.play()
     }
+
+    core.on(Events.TIMEUPDATE, onTimeUpdate)
+
+    return (() => {
+      core.off(Events.TIMEUPDATE, onTimeUpdate)
+    })
   }, [])
+
+  const onTimeUpdate = (current: number) => {
+    setCurrentTime(Math.floor(current))
+  }
 
   const onClick = () => {
     const newPlayState = !play
@@ -60,8 +96,8 @@ const Actions = ({
           <Icon.volumeOn />
         </button>
         <div class={`Momogoyo__RunningTime ${ecss.RunningTime}`}>
-          <span class={`Momogoyo__CurrentTime`}>00:00:00</span>
-          <span class={`Momogoyo__TotalTime ${ecss.TotalTime}`}>00:00:00</span>
+          <span class={`Momogoyo__CurrentTime`}>{ format(currentTime) }</span>
+          <span class={`Momogoyo__TotalTime ${ecss.TotalTime}`}>{ format(duration) }</span>
         </div>
       </div>
 

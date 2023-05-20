@@ -1,7 +1,7 @@
 import Hls from 'hls.js'
 import { h, render as prender } from 'preact'
 import { Events } from '@/core/constants'
-import { addClass } from '@momogoyo/shared'
+import { addClass, debounce } from '@momogoyo/shared'
 import Component from '@/components/Player'
 
 import type { ConfigsType } from '@/configs/types'
@@ -42,11 +42,14 @@ class Player extends EventEmitter {
 
   private addEventListeners () {
     this.hls.on(Hls.Events.MANIFEST_PARSED, this.render.bind(this))
+    
+    this.mediaElement.addEventListener(Events.TIMEUPDATE, this.timeUpdate.bind(this))
 
     // window.addEventListener('load', this.initialize.bind(this))
   }
 
   public render (): void {
+    console.log(this.hls)
     prender(h(Component, { core: this, configs: this.configs}), this.element)
     this.emit(Events.RENDERED)
   }
@@ -111,6 +114,12 @@ class Player extends EventEmitter {
   pause () {
     this.mediaElement.pause()
     this.emit(Events.PAUSE)
+  }
+
+  timeUpdate () {
+    const current = Math.min(Math.max(0, this.currentTime), this.mediaElement.duration)
+
+    this.emit(Events.TIMEUPDATE, current)
   }
 }
 
