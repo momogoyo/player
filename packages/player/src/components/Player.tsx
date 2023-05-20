@@ -2,7 +2,7 @@ import { h } from 'preact'
 import { useRef, useEffect } from 'preact/hooks'
 import { css } from '@emotion/css'
 
-import Seek from '@/components/Seek'
+import Seek from '@/components/Controls'
 
 import type Core from '@/core'
 import type { ConfigsType } from '@/configs/types'
@@ -37,6 +37,7 @@ const ecss = {
     position: relative;
     width: 100%;
     padding-top: 56.25%;
+    color: var(--light);
 
     .Momogoyo__Video {
       position: absolute;
