@@ -9,8 +9,7 @@ function Player (
   element: HTMLElement,
   configs: ConfigsType
 ) {
-  assign(defaultConfigs, configs)
-  const core = new Core(element, configs)
+  const core = new Core(element, assign(defaultConfigs, configs))
 
   return core
 }

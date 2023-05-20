@@ -70,7 +70,7 @@ const Actions = ({
     const videoElement = core.mediaElement
 
     if (videoElement) {
-      setDuration(videoElement.duration)
+      setDuration(core.duration())
     }
   }, [])
 

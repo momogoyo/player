@@ -47,7 +47,7 @@ class Player extends EventEmitter {
   }
 
   public render (): void {
-    prender(h(Component, { core: this, configs: this.configs}), this.element)
+    prender(h(Component, { core: this, configs: this.configs }), this.element)
     this.emit(Events.RENDERED)
   }
 
@@ -109,6 +109,10 @@ class Player extends EventEmitter {
     this.mediaElement.muted = value
   }
 
+  duration () {
+    return this.mediaElement.duration
+  }
+
   timeUpdate () {
     const current = Math.min(Math.max(0, this.currentTime), this.mediaElement.duration)
     this.emit(Events.TIMEUPDATE, current)
@@ -125,7 +129,6 @@ class Player extends EventEmitter {
         webkitRequestFullscreen(): Promise<void>
         msRequestFullScreen(): Promise<void>
       }
-      console.log(target)
 
       if (target.requestFullscreen) {
         target.requestFullscreen()

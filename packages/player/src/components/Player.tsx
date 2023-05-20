@@ -36,7 +36,7 @@ const Player = ({
     >
     {isControls.current && (
       <div class={`Momogoyo_Controls ${ecss.Controls}`}>
-        <Seek core={core} />
+        <Seek core={core} configs={configs} />
         <Actions core={core} />
       </div>
     )}
