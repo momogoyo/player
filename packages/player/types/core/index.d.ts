@@ -12,10 +12,17 @@ declare class Player extends EventEmitter {
     render(): void;
     private destroy;
     get paused(): boolean;
+    get autoplay(): boolean;
+    get muted(): boolean;
+    get loop(): boolean;
     get currentTime(): number;
+    get playbackRate(): number;
+    set autoplay(value: boolean);
+    set muted(value: boolean);
+    set loop(value: boolean);
+    set currentTime(value: number);
+    set playbackRate(value: number);
     play(): void;
     pause(): void;
-    setCurrentTime(time: number): void;
-    setPlaybackRate(rate: number): void;
 }
 export default Player;

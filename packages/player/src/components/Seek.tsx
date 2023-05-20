@@ -1,6 +1,7 @@
 import { h } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { css } from '@emotion/css'
+import Icon from '@/components/Icon'
 
 import type Core from '@/core'
 
@@ -39,20 +40,24 @@ const Seek = ({
   }
 
   return (
-    <div class={`Momogoyo__Seek`}>
+    <div class={`Momogoyo__Seek ${ecss.Seek}`}>
       <div class={`Momogoyo__Time`}>
         <span class={`current-time`}></span>
         <span class={`running-time`}></span>
       </div>
 
       <div class={`Momogoyo__Controls`}>
-        <button type="button">-10</button>
+        <button type="button" class={`Momogoyo__Prev ${ecss.Button} ${ecss.Prev}`}>
+          <Icon.prev />
+        </button>
         <button type="button" class={`${ecss.Button}`} onClick={onClick}>
           {
-            play ? '정지' : '재생'
+            play ? <Icon.pause /> : <Icon.play />
           }
         </button> 
-        <button type="button">+10</button>
+        <button type="button" class={`Momogoyo__Next ${ecss.Button} ${ecss.Next}`}>
+          <Icon.next />
+        </button>
       </div>
 
       <div class={`Momogoyo__Progress`}></div>
@@ -61,10 +66,24 @@ const Seek = ({
 }
 
 const ecss = {
+  Seek: css`
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `,
+
   Button: css`
     width: 100px;
     height: 50px;
-  `
+  `,
+
+  Prev: css`
+  `,
+
+  Next: css``
 }
 
 export default Seek

@@ -1,6 +1,7 @@
 import Hls from 'hls.js'
 import { h, render as prender } from 'preact'
 import { Events } from '@/core/constants'
+import { addClass } from '@momogoyo/shared'
 import Component from '@/components/Player'
 
 import type { ConfigsType } from '@/configs/types'
@@ -23,8 +24,9 @@ class Player extends EventEmitter {
   }
 
   private initialize (): void {
-    this.mediaElement = document.createElement('video')
+    this.mediaElement = document.createElement('video') as HTMLMediaElement
     const src = this.configs.src
+    addClass(this.mediaElement, 'Momogoyo__Video')
     
     this.loadSource(src)
   }
