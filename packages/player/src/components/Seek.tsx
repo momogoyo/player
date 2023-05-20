@@ -21,6 +21,7 @@ const ecss = {
     width: 100%;
     height: 2px;
     background-color: var(--primary100);
+    z-index: 2;
 `
 }
 

@@ -28,6 +28,7 @@ injectGlobal`
 	body {
 		line-height: 1;
 		box-sizing: border-box;
+		font-size: 10px;
 	}
 	ol, ul {
 		list-style: none;
