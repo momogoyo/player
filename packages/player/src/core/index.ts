@@ -65,10 +65,6 @@ class Player extends EventEmitter {
   get autoplay (): boolean {
     return this.mediaElement.autoplay
   }
-
-  get muted (): boolean {
-    return this.mediaElement.muted
-  }
   
   get loop (): boolean {
     return this.mediaElement.loop
@@ -84,10 +80,6 @@ class Player extends EventEmitter {
 
   set autoplay (value: boolean) {
     this.mediaElement.autoplay = value
-  }
-
-  set muted (value: boolean) {
-    this.mediaElement.muted = value
   }
 
   set loop (value: boolean) {
@@ -111,6 +103,10 @@ class Player extends EventEmitter {
   pause () {
     this.mediaElement.pause()
     this.emit(Events.PAUSE)
+  }
+
+  muted (value = false) {
+    this.mediaElement.muted = value
   }
 
   timeUpdate () {

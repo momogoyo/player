@@ -36,9 +36,14 @@ const Actions = ({
     }
   }
 
-  const handleFullscreen = () => {
+  const toggleFullscreen = () => {
     setFullscreen(!fullscreen)
     core.fullscreen(fullscreen)
+  }
+
+  const toggleMuted = () => {
+    setMuted(!muted)
+    core.muted(muted)
   }
 
   const updateVolumn = (event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
@@ -73,7 +78,7 @@ const Actions = ({
     if (autoplay) {
       const newMutedState = !muted
       setMuted(newMutedState)
-      core.muted = true
+      core.muted(true)
 
       setPlay(true)
       core.play()
@@ -111,8 +116,10 @@ const Actions = ({
       <div class={`Momogoyo__Settings ${ecss.Settings}`}>
         <div class={`Momogoyo__Volume ${ecss.Volume}`}>
           <input ref={volumeRef} class={`Momogoyo__Volumebar ${ecss.Volumebar}`} id="volume" type="range" min="0" max="100" step="1" />
-          <button type="button" class={`Momogoyo__Volumebtn ${ecss.Volumebtn} ${ecss.Button}`}>
-            <Icon.volumeOn />
+          <button type="button" class={`Momogoyo__Muted ${ecss.Muted} ${ecss.Button}`} onClick={toggleMuted}>
+            {
+              muted ? <Icon.volumeOn /> : <Icon.volumeOff /> 
+            }
           </button>
         </div>
         <button type="button" class={`Momogoyo__Caption ${ecss.Caption} ${ecss.Button}`}>
@@ -121,7 +128,7 @@ const Actions = ({
         <button type="button" class={`Momogoyo__Pip ${ecss.Pip} ${ecss.Button}`}>
           <Icon.pip />
         </button>
-        <button type="button" class={`Momogoyo__Fullscreen ${ecss.Fullscreen} ${ecss.Button}`} onClick={handleFullscreen}>
+        <button type="button" class={`Momogoyo__Fullscreen ${ecss.Fullscreen} ${ecss.Button}`} onClick={toggleFullscreen}>
           {
             fullscreen ? <Icon.collapse /> : <Icon.expand /> 
           }
@@ -228,7 +235,9 @@ const ecss = {
     }
   `,
 
-  Volumebtn: css``,
+  Muted: css`
+
+  `,
   
   Caption: css``,
   
