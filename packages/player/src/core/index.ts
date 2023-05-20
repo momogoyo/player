@@ -44,12 +44,9 @@ class Player extends EventEmitter {
     this.hls.on(Hls.Events.MANIFEST_PARSED, this.render.bind(this))
     
     this.mediaElement.addEventListener(Events.TIMEUPDATE, this.timeUpdate.bind(this))
-
-    // window.addEventListener('load', this.initialize.bind(this))
   }
 
   public render (): void {
-    console.log(this.hls)
     prender(h(Component, { core: this, configs: this.configs}), this.element)
     this.emit(Events.RENDERED)
   }
@@ -118,8 +115,48 @@ class Player extends EventEmitter {
 
   timeUpdate () {
     const current = Math.min(Math.max(0, this.currentTime), this.mediaElement.duration)
-
     this.emit(Events.TIMEUPDATE, current)
+  }
+
+  volume (value = 0.5) {
+    this.mediaElement.volume = value
+  }
+
+  fullscreen (fullscreen: boolean) {
+    if (!fullscreen) {
+      const target = (this.configs.fullscreenTarget || this.mediaElement) as HTMLElement & {
+        mozRequestFullScreen(): Promise<void>
+        webkitRequestFullscreen(): Promise<void>
+        msRequestFullScreen(): Promise<void>
+      }
+      console.log(target)
+
+      if (target.requestFullscreen) {
+        target.requestFullscreen()
+      } else if (target.mozRequestFullScreen) { /* Firefox */
+        target.mozRequestFullScreen()
+      } else if (target.webkitRequestFullscreen) { /* Chrome, Safari, Opera */
+        target.webkitRequestFullscreen()
+      } else if (target.msRequestFullScreen) { /* IE/Edge */
+        target.msRequestFullScreen()
+      }
+    } else {
+      const documentElement = document as Document & {
+        mozCancelFullScreen(): Promise<void>
+        webkitExitFullscreen(): Promise<void>
+        msExitFullScreen(): Promise<void>
+      }
+
+      if (documentElement.exitFullscreen) {
+        documentElement.exitFullscreen()
+      } else if (documentElement.mozCancelFullScreen) { /* Firefox */
+        documentElement.mozCancelFullScreen()
+      } else if (documentElement.webkitExitFullscreen) { /* Chrome, Safari, Opera */
+        documentElement.webkitExitFullscreen()
+      } else if (documentElement.msExitFullScreen) { /* IE/Edge */
+        documentElement.msExitFullScreen()
+      }
+    }
   }
 }
 

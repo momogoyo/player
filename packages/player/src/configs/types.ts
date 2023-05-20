@@ -13,7 +13,8 @@ type ConfigsType = {
   controls?: boolean
   autoplay?: boolean
   muted?: boolean
-  loop?: boolean
+  loop?: boolean,
+  fullscreenTarget?: HTMLElement
   chapters?: ChapterType[]
 }
 

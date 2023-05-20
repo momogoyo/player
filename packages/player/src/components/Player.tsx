@@ -1,6 +1,7 @@
 import { h } from 'preact'
 import { useRef, useEffect } from 'preact/hooks'
 import { css } from '@emotion/css'
+import { assign } from '@momogoyo/shared'
 
 import Seek from '@/components/Seek'
 import Actions from '@/components/Actions'
@@ -18,8 +19,13 @@ const Player = ({
   configs
 }: PlayerProps) => {
   const playerRef = useRef(null)
-
+  const isControls = useRef(configs.controls)
+  
   useEffect(() => {
+    assign(configs, {
+      fullscreenTarget: playerRef.current
+    })
+
     playerRef.current.insertAdjacentElement('afterbegin', core.mediaElement)
   }, [])
 
@@ -28,10 +34,12 @@ const Player = ({
       ref={playerRef}
       class={`Momogoyo__Player ${ecss.Container}`}
     >
+    {isControls.current && (
       <div class={`Momogoyo_Controls ${ecss.Controls}`}>
         <Seek core={core} />
         <Actions core={core} />
       </div>
+    )}
     </div>
   )
 }

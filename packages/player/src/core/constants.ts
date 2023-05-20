@@ -3,5 +3,6 @@ export const Events = {
   PLAY: 'play',
   PAUSE: 'pause',
   RENDERED: 'rendered',
-  TIMEUPDATE: 'timeupdate'
+  TIMEUPDATE: 'timeupdate',
+  FULLSCREEN: 'fullscreen'
 }

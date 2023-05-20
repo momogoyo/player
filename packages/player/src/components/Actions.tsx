@@ -1,11 +1,10 @@
 import { h } from 'preact'
-import { useEffect, useState } from 'preact/hooks'
+import { useEffect, useState, useRef } from 'preact/hooks'
 import { css } from '@emotion/css'
 import Icon from '@/components/Icon'
 
 import type Core from '@/core'
 import { Events } from '@/core/constants'
-import { debounce } from '@momogoyo/shared'
 
 type ActionsProps = {
   core: Core
@@ -17,11 +16,40 @@ const Actions = ({
   const [play, setPlay] = useState(!core.paused)
   const [autoplay, setAutoplay] = useState(core.configs.autoplay)
   const [muted, setMuted] = useState(!core.configs.muted)
-  const [loop, setLoop] = useState(core.configs.loop)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [fullscreen, setFullscreen] = useState(false)
+  const volumeRef = useRef<HTMLInputElement>(null)
 
-  const format = (time: number) => {
+  const onTimeUpdate = (current: number) => {
+    setCurrentTime(Math.floor(current))
+  }
+
+  const onClick = () => {
+    const newPlayState = !play
+    setPlay(newPlayState)
+
+    if (newPlayState) {
+      core.play()
+    } else {
+      core.pause()
+    }
+  }
+
+  const handleFullscreen = () => {
+    setFullscreen(!fullscreen)
+    core.fullscreen(fullscreen)
+  }
+
+  const updateVolumn = (event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
+    const volume = (event.target as HTMLInputElement).value
+    volumeRef.current.value = volume
+    volumeRef.current.style.backgroundSize = `${volume}% 100%`
+    
+    core.volume(Number(volume) / 100)
+  }
+
+  const formatTime = (time: number) => {
     const hours = Math.floor(time / 3600)
     const minutes = Math.floor((time % 3600) / 60)
     const seconds = Math.floor(time % 60)
@@ -38,8 +66,6 @@ const Actions = ({
 
     if (videoElement) {
       setDuration(videoElement.duration)
-
-      console.log(Math.min(Math.max(core.currentTime, 0), duration))
     }
   }, [])
 
@@ -54,26 +80,12 @@ const Actions = ({
     }
 
     core.on(Events.TIMEUPDATE, onTimeUpdate)
+    volumeRef.current.addEventListener('input', updateVolumn)
 
     return (() => {
       core.off(Events.TIMEUPDATE, onTimeUpdate)
     })
   }, [])
-
-  const onTimeUpdate = (current: number) => {
-    setCurrentTime(Math.floor(current))
-  }
-
-  const onClick = () => {
-    const newPlayState = !play
-    setPlay(newPlayState)
-
-    if (newPlayState) {
-      core.play()
-    } else {
-      core.pause()
-    }
-  }
 
   return (
     <div class={`Momogoyo__Actions ${ecss.Actions}`}>
@@ -91,25 +103,28 @@ const Actions = ({
         </button>
       </div>
       
-      <div class={`Momogoyo__Status ${ecss.Status}`}>
-        <button type="button" class={`Momogoyo__Volume ${ecss.Volume} ${ecss.Button}`}>
-          <Icon.volumeOn />
-        </button>
-        <div class={`Momogoyo__RunningTime ${ecss.RunningTime}`}>
-          <span class={`Momogoyo__CurrentTime`}>{ format(currentTime) }</span>
-          <span class={`Momogoyo__TotalTime ${ecss.TotalTime}`}>{ format(duration) }</span>
-        </div>
+      <div class={`Momogoyo__RunningTime ${ecss.RunningTime}`}>
+        <span class={`Momogoyo__CurrentTime`}>{formatTime(currentTime)}</span>
+        <span class={`Momogoyo__TotalTime ${ecss.TotalTime}`}>{formatTime(duration)}</span>
       </div>
 
       <div class={`Momogoyo__Settings ${ecss.Settings}`}>
+        <div class={`Momogoyo__Volume ${ecss.Volume}`}>
+          <input ref={volumeRef} class={`Momogoyo__Volumebar ${ecss.Volumebar}`} id="volume" type="range" min="0" max="100" step="1" />
+          <button type="button" class={`Momogoyo__Volumebtn ${ecss.Volumebtn} ${ecss.Button}`}>
+            <Icon.volumeOn />
+          </button>
+        </div>
         <button type="button" class={`Momogoyo__Caption ${ecss.Caption} ${ecss.Button}`}>
           <Icon.caption />
         </button>
         <button type="button" class={`Momogoyo__Pip ${ecss.Pip} ${ecss.Button}`}>
           <Icon.pip />
         </button>
-        <button type="button" class={`Momogoyo__Fullscreen ${ecss.Fullscreen} ${ecss.Button}`}>
-          <Icon.expand />
+        <button type="button" class={`Momogoyo__Fullscreen ${ecss.Fullscreen} ${ecss.Button}`} onClick={handleFullscreen}>
+          {
+            fullscreen ? <Icon.collapse /> : <Icon.expand /> 
+          }
         </button>
         <button type="button" class={`Momogoyo__Setting ${ecss.Setting} ${ecss.Button}`}>
           <Icon.setting />
@@ -141,18 +156,11 @@ const ecss = {
     justify-content: center;
     cursor: pointer;
   `,
-
-  Status: css`
-    display: flex;
-    align-items: center;
-    margin-right: auto;
-  `,
-  
-  Volume: css``,
   
   RunningTime: css`
     display: flex;
     align-items: center;
+    margin-right: auto;
     font-weight: 400;
     font-size: 109%;
     line-height: 47px;
@@ -175,6 +183,52 @@ const ecss = {
     display: flex;
     align-items: center;
   `,
+
+  Volume: css`
+    display: flex;
+    align-items: center;
+
+    &:hover .Momogoyo__Volumebar {
+      opacity: 1;
+      pointer-events: initial;
+    }
+  `,
+
+  Volumebar: css`
+    opacity: 0.000001;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+
+    width: 100px;
+    height: 4px;
+    background-color: var(--primary100);
+    background-image: linear-gradient(var(--primary), var(--primary));
+    background-size: 50% 100%;
+    background-repeat: no-repeat;    
+    -webkit-appearance: none;
+    cursor: pointer;
+    outline: none;
+    margin: 0 5px;
+
+    &::-webkit-slider-runnable-track {
+      box-shadow: none;
+      border: none;
+      background: transparent;
+      -webkit-appearance: none;
+    }
+
+    &::-webkit-slider-thumb {
+      width: 4px;
+      height: 12px;
+      margin-top: 1px;
+      border: 0;
+      background: #fff;
+      box-shadow: 0 0 1px 0px rgba(0, 0, 0, 0.1);
+      -webkit-appearance: none;
+    }
+  `,
+
+  Volumebtn: css``,
   
   Caption: css``,
   

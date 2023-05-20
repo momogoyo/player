@@ -4,7 +4,9 @@ const element = document.getElementById('player') as HTMLElement
 const configs = {
   src: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
   title: '내 플레이어',
-  autoplay: false
+  autoplay: false,
+  controls: true,
+  fullscreenTarget: element
 }
 
 const player = Player(element, configs)

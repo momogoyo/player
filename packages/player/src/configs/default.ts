@@ -19,6 +19,7 @@ const defaultConfigs = {
   autoplay: false,
   muted: false,
   loop: false,
+  fullscreenTarget: null,
   chapters: [chapter]
 } as ConfigsType
 
