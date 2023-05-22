@@ -70,10 +70,6 @@ class Player extends EventEmitter {
     return this.mediaElement.loop
   }
   
-  get currentTime (): number {
-    return this.mediaElement.currentTime
-  }
-
   get playbackRate (): number {
     return this.mediaElement.playbackRate
   }
@@ -84,10 +80,6 @@ class Player extends EventEmitter {
 
   set loop (value: boolean) {
     this.mediaElement.loop = value
-  }
-
-  set currentTime (value: number) {
-    this.mediaElement.currentTime = value
   }
 
   set playbackRate (value: number) {
@@ -113,8 +105,16 @@ class Player extends EventEmitter {
     return this.mediaElement.duration
   }
 
+  currentTime(value?: number) {
+    if (value) {
+      this.mediaElement.currentTime = value
+    } else {
+      return this.mediaElement.currentTime
+    }
+  }
+
   timeUpdate () {
-    const current = Math.min(Math.max(0, this.currentTime), this.mediaElement.duration)
+    const current = Math.min(Math.max(0, this.currentTime()), this.duration())
     this.emit(Events.TIMEUPDATE, current)
   }
 

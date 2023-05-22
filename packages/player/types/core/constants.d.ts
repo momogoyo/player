@@ -3,4 +3,6 @@ export declare const Events: {
     PLAY: string;
     PAUSE: string;
     RENDERED: string;
+    TIMEUPDATE: string;
+    FULLSCREEN: string;
 };

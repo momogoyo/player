@@ -13,16 +13,19 @@ declare class Player extends EventEmitter {
     private destroy;
     get paused(): boolean;
     get autoplay(): boolean;
-    get muted(): boolean;
     get loop(): boolean;
     get currentTime(): number;
     get playbackRate(): number;
     set autoplay(value: boolean);
-    set muted(value: boolean);
     set loop(value: boolean);
     set currentTime(value: number);
     set playbackRate(value: number);
     play(): void;
     pause(): void;
+    muted(value?: boolean): void;
+    duration(): number;
+    timeUpdate(): void;
+    volume(value?: number): void;
+    fullscreen(fullscreen: boolean): void;
 }
 export default Player;

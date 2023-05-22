@@ -13,6 +13,7 @@ type ConfigsType = {
     autoplay?: boolean;
     muted?: boolean;
     loop?: boolean;
+    fullscreenTarget?: HTMLElement;
     chapters?: ChapterType[];
 };
 export { ChapterType, ConfigsType, };
