@@ -23,6 +23,17 @@ const Actions = ({
 
   const onTimeUpdate = (current: number) => {
     setCurrentTime(Math.floor(current))
+
+    return currentTime
+  }
+  
+  const onCurrentTime = (current: number) => {
+    setCurrentTime(Math.floor(current))
+  }
+
+  const onUpdateTime = (update: number) => {
+    setCurrentTime(Math.floor(update))
+    core.currentTime(update)
   }
 
   const onClick = () => {
@@ -85,6 +96,8 @@ const Actions = ({
     }
 
     core.on(Events.TIMEUPDATE, onTimeUpdate)
+    core.on(Events.CURRENTTIME, onCurrentTime)
+    core.on(Events.UPDATETIME, onUpdateTime)
     volumeRef.current.addEventListener('input', updateVolumn)
 
     return (() => {
@@ -162,6 +175,7 @@ const ecss = {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    user-select: none;
   `,
   
   RunningTime: css`

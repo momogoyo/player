@@ -78,7 +78,7 @@ class Player extends EventEmitter {
   get loop (): boolean {
     return this.mediaElement.loop
   }
-
+  
   get playbackRate (): number {
     return this.mediaElement.playbackRate
   }

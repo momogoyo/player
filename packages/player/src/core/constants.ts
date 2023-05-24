@@ -6,5 +6,7 @@ export const Events = {
   UPDATETIME: 'updatetime',
   CURRENTTIME: 'currenttime',
   TIMEUPDATE: 'timeupdate',
+  UPDATETIME: 'updatetime',
+  CURRENTTIME: 'currenttime',
   FULLSCREEN: 'fullscreen'
 }
