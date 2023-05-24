@@ -109,16 +109,20 @@ const Seek = ({
       currentTarget.setPointerCapture(pointerId)
     }
 
-    seeking(clientX)
     isDragging.current = true
+
+    const currentTime = seeking(clientX)
+    core.emit(Events.CURRENTTIME, currentTime)
+    
+    updateFilled(currentTime)
   }
 
   const onPointerMove = (event: PointerEvent) => {
     if (!isDragging.current) return
 
     const { clientX } = event
-    
-    seeking(clientX)
+    const currentTime = seeking(clientX)
+    updateFilled(currentTime)
   }
 
   const onPointerUp = (event: PointerEvent) => {
@@ -134,6 +138,14 @@ const Seek = ({
     core.emit(Events.UPDATETIME, updateTime)
   }
 
+  const onTimeupdate = () => {
+    if (!isDragging.current) {
+      const currentTime = core.currentTime()
+
+      updateFilled(currentTime)
+    }
+  }
+
   useEffect(() => {
     configs.chapters.map((chapter) => {
       chaptersRef.current.push({
@@ -143,7 +155,7 @@ const Seek = ({
       })
     })
 
-    core.on(Events.TIMEUPDATE, updateFilled)
+    core.on(Events.TIMEUPDATE, onTimeupdate)
   }, [])
 
   useEffect(() => {
