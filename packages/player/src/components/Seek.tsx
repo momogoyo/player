@@ -194,7 +194,7 @@ const Seek = ({
                 class={`Momogoyo__Filled ${ecss.Filled}`}
                 ref={filledRef}
                 style={{
-                  transform: scaleX.index === index ? `scaleX(${scaleX.scale})` : scaleX.index >= index ? 1 : 0,
+                  transform: scaleX.index === index ? `scaleX(${scaleX.scale})` : scaleX.index >= index ? `scaleX(1)` : `scaleX(0)`,
                 }}
               ></div>
               <div class={`Momogoyo__Buffered ${ecss.Buffered}`}></div>
