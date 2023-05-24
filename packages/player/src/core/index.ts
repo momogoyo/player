@@ -32,17 +32,26 @@ class Player extends EventEmitter {
   }
   
   public loadSource (source: string): void {
-    if (Hls.isSupported() && this.hls) {
+    if (Hls.isSupported() && this.hls && source.endsWith('.m3u8')) {
       this.hls.loadSource(source)
       this.hls.attachMedia(this.mediaElement)
+    } else if (source.endsWith('.mp4')) {
+      this.mediaElement.src = source
+      this.mediaElement.load()
     } else if (this.mediaElement.canPlayType('application/vnd.apple.mpegurl')) {
       this.mediaElement.src = source
+      this.mediaElement.load()
     }
   }
 
   private addEventListeners () {
-    this.hls.on(Hls.Events.MANIFEST_PARSED, this.render.bind(this))
+    const source = this.configs.src
     
+    if (Hls.isSupported() && this.hls && source.endsWith('.m3u8')) {
+      this.hls.on(Hls.Events.MANIFEST_PARSED, this.render.bind(this))
+    } else if (source.endsWith('.mp4')) {
+      this.mediaElement.addEventListener(Events.LOADEDMETADATA, this.render.bind(this))
+    }
     this.mediaElement.addEventListener(Events.TIMEUPDATE, this.timeUpdate.bind(this))
   }
 
@@ -69,10 +78,6 @@ class Player extends EventEmitter {
   get loop (): boolean {
     return this.mediaElement.loop
   }
-  
-  get currentTime (): number {
-    return this.mediaElement.currentTime
-  }
 
   get playbackRate (): number {
     return this.mediaElement.playbackRate
@@ -84,10 +89,6 @@ class Player extends EventEmitter {
 
   set loop (value: boolean) {
     this.mediaElement.loop = value
-  }
-
-  set currentTime (value: number) {
-    this.mediaElement.currentTime = value
   }
 
   set playbackRate (value: number) {
@@ -113,8 +114,16 @@ class Player extends EventEmitter {
     return this.mediaElement.duration
   }
 
+  currentTime(value?: number) {
+    if (value) {
+      this.mediaElement.currentTime = value
+    } else {
+      return this.mediaElement.currentTime
+    }
+  }
+
   timeUpdate () {
-    const current = Math.min(Math.max(0, this.currentTime), this.mediaElement.duration)
+    const current = Math.min(Math.max(0, this.currentTime()), this.duration())
     this.emit(Events.TIMEUPDATE, current)
   }
 
