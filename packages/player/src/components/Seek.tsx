@@ -22,7 +22,6 @@ const Seek = ({
   const cursorRef = useRef(null)
   const chaptersRef = useRef([])
   const seeks = useRef([])
-  const filled = useRef(null)
   const [scaleX, setScaleX] = useState({
     scale: 0,
     index: -1
@@ -40,11 +39,13 @@ const Seek = ({
     return currentTime
   }
 
-  const currentTrack = () => {
-    const trackTime = chaptersRef.current.find(chapter => Math.floor(core.currentTime()) >= chapter.startTime && Math.floor(core.currentTime()) <= chapter.endTime)
-    const trackIndex = chaptersRef.current.indexOf(trackTime)
+  const currentTrack = (currentTime: number) => {
+    const track = chaptersRef.current.find(chapter => (
+      Math.floor(currentTime) >= chapter.startTime && Math.floor(currentTime) <= chapter.endTime
+    ))
+    const index = chaptersRef.current.indexOf(track)
 
-    if (trackIndex < 0) {
+    if (index < 0) {
       return {
         startTime: 0,
         endTime: 0,
@@ -53,29 +54,22 @@ const Seek = ({
     }
 
     return {
-      startTime: trackTime.startTime,
-      endTime: trackTime.endTime,
-      index: trackIndex
+      startTime: track.startTime,
+      endTime: track.endTime,
+      index: index
     }
   }
 
   const updateFilled = (currentTime: number) => {
-    const { startTime, endTime, index } = currentTrack()
-
+    const { startTime, endTime, index } = currentTrack(currentTime)
     const segment = Math.abs(endTime) - startTime
     const startX = currentTime - startTime
     const scale = Math.min(startX / segment, 1)
 
-    filled.current = {
+    setScaleX({ 
       scale,
       index
-    }
-
-    setScaleX(prevState => ({
-      ...prevState,
-      scale: filled.current.scale,
-      index: filled.current.index
-    }))
+    })
   }
 
   const getTotalSeconds = (time: string) => {
@@ -94,14 +88,6 @@ const Seek = ({
     return totalSeconds
   }
   
-  const getSeeks = () => {
-    return chaptersRef.current.map((chapter) => {
-      const { startTime, endTime } = chapter
-
-      return (Math.abs(endTime) - startTime) / core.duration() * 100
-    })
-  }
-
   const onPointerDown = (event: PointerEvent) => {
     const { currentTarget, pointerId, clientX } = event
     
@@ -122,6 +108,7 @@ const Seek = ({
 
     const { clientX } = event
     const currentTime = seeking(clientX)
+    
     updateFilled(currentTime)
   }
 
@@ -147,7 +134,7 @@ const Seek = ({
   }
 
   useEffect(() => {
-    configs.chapters.map((chapter) => {
+    configs.chapters.forEach((chapter) => {
       chaptersRef.current.push({
         ...chapter,
         startTime: getTotalSeconds(chapter.startTime),
@@ -155,14 +142,25 @@ const Seek = ({
       })
     })
 
+    const getSeeks = () => {
+      return chaptersRef.current.map((chapter) => {
+        const { startTime, endTime } = chapter
+  
+        return (Math.abs(endTime) - startTime) / core.duration() * 100
+      })
+    }
+    
+    seeks.current = getSeeks()
+  }, [])
+
+  useEffect(() => {
     core.on(Events.TIMEUPDATE, onTimeupdate)
   }, [])
 
   useEffect(() => {
     setRendered(true)
-    seeks.current = getSeeks()
   }, [])
-
+  
   return (rendered && 
     <div class={`Momogoyo__Progress ${ecss.Progress}`}
       onPointerDown={onPointerDown}

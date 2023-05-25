@@ -1,7 +1,7 @@
 import Hls from 'hls.js'
 import { h, render as prender } from 'preact'
 import { Events } from '@/core/constants'
-import { addClass, debounce } from '@momogoyo/shared'
+import { addClass } from '@momogoyo/shared'
 import Component from '@/components/Player'
 
 import type { ConfigsType } from '@/configs/types'
