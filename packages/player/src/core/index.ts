@@ -25,6 +25,7 @@ class Player extends EventEmitter {
 
   private initialize (): void {
     this.mediaElement = document.createElement('video') as HTMLMediaElement
+    console.log(this.mediaElement.seekable)
     const src = this.configs.src
     addClass(this.mediaElement, 'Momogoyo__Video')
     
@@ -129,6 +130,10 @@ class Player extends EventEmitter {
 
   volume (value = 0.5) {
     this.mediaElement.volume = value
+  }
+
+  buffered () {
+    return this.mediaElement.buffered
   }
 
   fullscreen (fullscreen: boolean) {

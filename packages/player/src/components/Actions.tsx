@@ -161,6 +161,7 @@ const ecss = {
     align-items: center;
     justify-content: space-between; 
     z-index: 2;
+    padding: 0 12px;
   `,
 
   Playback: css`

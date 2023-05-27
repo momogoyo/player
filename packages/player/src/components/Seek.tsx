@@ -19,6 +19,7 @@ const Seek = ({
   const [rendered, setRendered] = useState(false)
   const seekRef = useRef(null)
   const filledRef = useRef(null)
+  const bufferedRef = useRef(null)
   const cursorRef = useRef(null)
   const chaptersRef = useRef([])
   const seeks = useRef([])
@@ -26,6 +27,7 @@ const Seek = ({
     scale: 0,
     index: -1
   })
+  const bufferedState = useRef([])
   const isDragging = useRef<boolean>(false)
 
   const seeking = (clientX: number) => {
@@ -43,8 +45,13 @@ const Seek = ({
     const track = chaptersRef.current.find(chapter => (
       Math.floor(currentTime) >= chapter.startTime && Math.floor(currentTime) <= chapter.endTime
     ))
-    const index = chaptersRef.current.indexOf(track)
-
+    let index = chaptersRef.current.indexOf(track)
+  
+    if (index < 0 && currentTime < chaptersRef.current[0].startTime) {
+      currentTime = chaptersRef.current[0].startTime
+      index = 0
+    }
+  
     if (index < 0) {
       return {
         startTime: 0,
@@ -52,14 +59,14 @@ const Seek = ({
         index: -1
       }
     }
-
+  
     return {
       startTime: track.startTime,
       endTime: track.endTime,
       index: index
     }
   }
-
+  
   const updateFilled = (currentTime: number) => {
     const { startTime, endTime, index } = currentTrack(currentTime)
     const segment = Math.abs(endTime) - startTime
@@ -70,6 +77,63 @@ const Seek = ({
       scale,
       index
     })
+  }
+
+  const updateBuffered = (bufferedTime: TimeRanges) => {
+    const { width } = seekRef.current.getBoundingClientRect()
+    const buffered = bufferedTime
+    const inc = width / core.duration()
+  
+    bufferedState.current = [] // 버퍼링 상태 배열 초기화
+  
+    if (buffered.length) {
+      for (let i = 0; i < buffered.length; i++) {
+        const start = buffered.start(i) * inc
+        const end = buffered.end(i) * inc
+  
+        let currentStartTrack = currentTrack(start)
+        let currentEndTrack = currentTrack(end)
+  
+        // 버퍼링 범위가 하나의 트랙에 모두 포함되어 있는 경우
+        if (currentStartTrack.index === currentEndTrack.index) {
+          const segment = Math.abs(currentStartTrack.endTime - currentStartTrack.startTime)
+          const scale = Math.min((end - start) / segment, 1)
+  
+          bufferedState.current.push({
+            scale,
+            index: currentStartTrack.index
+          })
+        } 
+        // 버퍼링 범위가 여러 트랙에 걸쳐 있는 경우
+        else {
+          // 시작 트랙의 scale을 계산합니다
+          const startSegment = Math.abs(currentStartTrack.endTime - currentStartTrack.startTime)
+          const startScale = Math.min((currentStartTrack.endTime - start) / startSegment, 1)
+  
+          bufferedState.current.push({
+            scale: startScale,
+            index: currentStartTrack.index
+          })
+  
+          // 끝 트랙의 scale을 계산합니다
+          const endSegment = Math.abs(currentEndTrack.endTime - currentEndTrack.startTime)
+          const endScale = Math.min((end - currentEndTrack.startTime) / endSegment, 1)
+  
+          bufferedState.current.push({
+            scale: endScale,
+            index: currentEndTrack.index
+          })
+  
+          // 시작 트랙과 끝 트랙 사이의 모든 트랙에 대해 scale을 1로 설정합니다
+          for (let j = currentStartTrack.index + 1; j < currentEndTrack.index; j++) {
+            bufferedState.current.push({
+              scale: 1,
+              index: j
+            })
+          }
+        }
+      }
+    }
   }
 
   const getTotalSeconds = (time: string) => {
@@ -128,8 +192,10 @@ const Seek = ({
   const onTimeupdate = () => {
     if (!isDragging.current) {
       const currentTime = core.currentTime()
+      const bufferedTime = core.buffered()
 
       updateFilled(currentTime)
+      updateBuffered(bufferedTime)
     }
   }
 
@@ -195,7 +261,17 @@ const Seek = ({
                   transform: scaleX.index === index ? `scaleX(${scaleX.scale})` : scaleX.index >= index ? `scaleX(1)` : `scaleX(0)`,
                 }}
               ></div>
-              <div class={`Momogoyo__Buffered ${ecss.Buffered}`}></div>
+              <div
+                ref={bufferedRef}
+                class={`Momogoyo__Buffered ${ecss.Buffered}`}
+                style={{
+                  transform: (
+                    bufferedState.current.find(b => b.index === index) 
+                    ? `scaleX(${bufferedState.current.find(b => b.index === index).scale})` 
+                    : `scaleX(0)`
+                  )
+                }}
+              ></div>
             </div>
             <div
               class={`Momogoyo__Cursor ${ecss.Cursor}`}
@@ -218,6 +294,8 @@ const ecss = {
     cursor: pointer;
     padding: 24px 0;
     box-sizing: unset;
+    margin: 0 24px;
+    transform: translateY(24px);
   `,
 
   Film: css``,
@@ -230,6 +308,7 @@ const ecss = {
     height: 100%;
     display: flex;
     gap: 2px;
+    margin: 0 12px;
   `,
 
   Seek: css`
@@ -237,10 +316,6 @@ const ecss = {
     height: 100%;
     background-color: var(--primary100);
   `,
-
-  Buffered: css``,
-
-  Cursor: css``,
 
   Filled: css`
     position: absolute;
@@ -252,7 +327,22 @@ const ecss = {
     transform: scaleX(0);
     transform-origin: 0 0 0;
     z-index: 3;
-  `
+  `,
+
+  Buffered: css`
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--secondary200);
+    opacity: 0.6;
+    transform: scaleX(0);
+    transform-origin: 0 0 0;
+    z-index: 2;
+  `,
+
+  Cursor: css``
 }
 
 export default Seek
