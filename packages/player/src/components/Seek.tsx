@@ -19,15 +19,16 @@ const Seek = ({
   const [rendered, setRendered] = useState(false)
   const seekRef = useRef(null)
   const filledRef = useRef(null)
-  const bufferedRef = useRef(null)
   const cursorRef = useRef(null)
   const chaptersRef = useRef([])
+  const bufferedRef = useRef([])
   const seeks = useRef([])
+  const [chapterThumbX, setChapterThumbX] = useState(0)
+  const [chapterThumbTitleX, setChapterThumbTitleX] = useState(0)
   const [scaleX, setScaleX] = useState({
     scale: 0,
     index: -1
   })
-  const bufferedState = useRef([])
   const isDragging = useRef<boolean>(false)
 
   const seeking = (clientX: number) => {
@@ -46,11 +47,6 @@ const Seek = ({
       Math.floor(currentTime) >= chapter.startTime && Math.floor(currentTime) <= chapter.endTime
     ))
     let index = chaptersRef.current.indexOf(track)
-  
-    if (index < 0 && currentTime < chaptersRef.current[0].startTime) {
-      currentTime = chaptersRef.current[0].startTime
-      index = 0
-    }
   
     if (index < 0) {
       return {
@@ -84,7 +80,7 @@ const Seek = ({
     const buffered = bufferedTime
     const inc = width / core.duration()
   
-    bufferedState.current = [] // 버퍼링 상태 배열 초기화
+    bufferedRef.current = [] // 버퍼링 상태 배열 초기화
   
     if (buffered.length) {
       for (let i = 0; i < buffered.length; i++) {
@@ -99,7 +95,7 @@ const Seek = ({
           const segment = Math.abs(currentStartTrack.endTime - currentStartTrack.startTime)
           const scale = Math.min((end - start) / segment, 1)
   
-          bufferedState.current.push({
+          bufferedRef.current.push({
             scale,
             index: currentStartTrack.index
           })
@@ -110,7 +106,7 @@ const Seek = ({
           const startSegment = Math.abs(currentStartTrack.endTime - currentStartTrack.startTime)
           const startScale = Math.min((currentStartTrack.endTime - start) / startSegment, 1)
   
-          bufferedState.current.push({
+          bufferedRef.current.push({
             scale: startScale,
             index: currentStartTrack.index
           })
@@ -119,14 +115,14 @@ const Seek = ({
           const endSegment = Math.abs(currentEndTrack.endTime - currentEndTrack.startTime)
           const endScale = Math.min((end - currentEndTrack.startTime) / endSegment, 1)
   
-          bufferedState.current.push({
+          bufferedRef.current.push({
             scale: endScale,
             index: currentEndTrack.index
           })
   
           // 시작 트랙과 끝 트랙 사이의 모든 트랙에 대해 scale을 1로 설정합니다
           for (let j = currentStartTrack.index + 1; j < currentEndTrack.index; j++) {
-            bufferedState.current.push({
+            bufferedRef.current.push({
               scale: 1,
               index: j
             })
@@ -134,6 +130,43 @@ const Seek = ({
         }
       }
     }
+  }
+
+  const handleThumb = (currentTime: number) => {
+    if(!isDragging.current) return
+
+    const { width } = seekRef.current.getBoundingClientRect()
+    const positionX = currentTime / core.duration()
+    const minSpace = 24 / width
+    const minWidth = (69 / width) + minSpace
+    const maxSpace = 48 / width
+    const maxWidth = (138 / width) + maxSpace
+
+    const newChapterThumbX = Math.min(
+      Math.max((positionX - minWidth) * 100, 0),
+      Math.max((1 - maxWidth) * 100, 0)
+    )
+  
+    setChapterThumbX(newChapterThumbX)
+  }
+
+  const handleThumbTitle = (currentTime: number) => {
+    if(!isDragging.current) return
+
+    const { width } = seekRef.current.getBoundingClientRect()
+
+    const thumbPosX = currentTime / core.duration()
+    const minSpace = 24 / width
+    const minWidth = (88.5 / width) + minSpace
+    const maxSpace = 48 / width
+    const maxWidth = (177 / width) + maxSpace
+
+    const newChapterThumbX = Math.min(
+      Math.max((thumbPosX - minWidth) * 100, 0),
+      Math.max((1 - maxWidth) * 100, 0)
+    )
+  
+    setChapterThumbTitleX(newChapterThumbX)
   }
 
   const getTotalSeconds = (time: string) => {
@@ -165,6 +198,8 @@ const Seek = ({
     core.emit(Events.CURRENTTIME, currentTime)
     
     updateFilled(currentTime)
+    handleThumb(currentTime)
+    handleThumbTitle(currentTime)
   }
 
   const onPointerMove = (event: PointerEvent) => {
@@ -174,6 +209,8 @@ const Seek = ({
     const currentTime = seeking(clientX)
     
     updateFilled(currentTime)
+    handleThumb(currentTime)
+    handleThumbTitle(currentTime)
   }
 
   const onPointerUp = (event: PointerEvent) => {
@@ -195,7 +232,7 @@ const Seek = ({
       const bufferedTime = core.buffered()
 
       updateFilled(currentTime)
-      updateBuffered(bufferedTime)
+      // updateBuffered(bufferedTime)
     }
   }
 
@@ -207,6 +244,8 @@ const Seek = ({
         endTime: getTotalSeconds(chapter.endTime),
       })
     })
+
+    console.log()
 
     const getSeeks = () => {
       return chaptersRef.current.map((chapter) => {
@@ -233,13 +272,30 @@ const Seek = ({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
     >
-      <div class={`Momogoyo__Film ${ecss.Film}`}>
-        <div class={`Momogoyo__Film-figure ${ecss.Figure}`}>
-          <img class={`Momogoyo__Film-thumbnail`} src="" alt="" width="138"/>
-          <span class={`Momogoyo__Film-time`}></span>
+      {isDragging.current && 
+        <div class={`Momogoyo__Chapter ${ecss.Chapter}`}>
+          <div 
+            class={`Momogoyo__Chapter-thumbnail ${ecss.ChapterThumbnail}`}
+            style={{
+              left : `calc(${chapterThumbX}% + 24px)`
+            }}>
+              <img 
+                class={`Momogoyo__Chapter-image ${ecss.ChapterImage}`}
+                src={chaptersRef.current[scaleX.index].thumbnail} 
+                alt="" 
+                width="138"
+              />
+              <span class={`Momogoyo__Chapter-time ${ecss.ChapterTime}`}></span>
+          </div>
+          <div
+            class={`Momogoyo__Chapter-title ${ecss.ChapterTitle}`}
+            style={{
+              left : `calc(${chapterThumbTitleX}% + 24px)`
+            }}>
+            {chaptersRef.current[scaleX.index].desc}
+          </div>
         </div>
-        <div class={`Momogoyo__Film-desc`}></div>
-      </div>
+      }
 
       <div 
         class={`Momogoyo__Seeks ${ecss.Seeks}`}
@@ -262,12 +318,11 @@ const Seek = ({
                 }}
               ></div>
               <div
-                ref={bufferedRef}
                 class={`Momogoyo__Buffered ${ecss.Buffered}`}
                 style={{
                   transform: (
-                    bufferedState.current.find(b => b.index === index) 
-                    ? `scaleX(${bufferedState.current.find(b => b.index === index).scale})` 
+                    bufferedRef.current.find(b => b.index === index) 
+                    ? `scaleX(${bufferedRef.current.find(b => b.index === index).scale})` 
                     : `scaleX(0)`
                   )
                 }}
@@ -286,6 +341,7 @@ const Seek = ({
 
 const ecss = {
   Progress: css`
+    width: 100%;
     display: flex;
     gap: 2px;
     width: 100%;
@@ -298,9 +354,54 @@ const ecss = {
     transform: translateY(24px);
   `,
 
-  Film: css``,
+  Chapter: css`
+    /* position: relative; */
+    pointer-events: none;
+    transition: opacity .24s;
+  `,
 
-  Figure: css``,
+  ChapterThumbnail: css`
+    position: absolute;
+    bottom: 56px;
+    width: 138px;
+    height: 80px;
+    margin-bottom: 8px;
+    margin: 0 auto;
+  `,
+
+  ChapterImage: css`
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.05) 100%, rgba(0, 0, 0, 0.15) 100%);
+  `,
+  
+  ChapterTime: css`
+    position: absolute;
+    bottom: 7px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 1;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+    color: #FFFFFF;
+  `,
+
+  ChapterTitle: css`
+    position: absolute;
+    bottom: 30px;
+    width: 177px;
+    display: block;
+    font-weight: 500;
+    font-size: 12px;
+    text-align: center;
+    line-height: 18px;
+    color: var(--text-01);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  `,
 
   Seeks: css`
     position: relative;
