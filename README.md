@@ -6,7 +6,7 @@ Vite, TypeScript, Preact 등의 기술을 사용하고 있습니다
 
 ## 시작하기
 ### 설치
-Player를 설치하려면 터미널에서 다음 명령어를 실행하세요
+Player를 설치하려면 터미널에서 다음 명령어를 실행하세요 (아직 설정 전)
 ```
 npm install @momogoyo/player
 ```
@@ -41,6 +41,3 @@ npm run dev
 
 ## 버전
 현재 버전은 1.0.0입니다.
-
-## 저장소
-저장소는 [여기](https://github.com/momogoyo/player)에서 찾을 수 있습니다.
